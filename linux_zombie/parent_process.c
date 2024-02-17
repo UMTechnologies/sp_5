@@ -44,26 +44,30 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    double totalSum = 0;
-    for (int i = 0; i < nChildren; i++) {
-        waitpid(pids[i], NULL, 0);
+    fclose(resultFile);
 
-        char resultFilename[BUFFER_SIZE];
-        sprintf(resultFilename, "result_%d.txt", i);
-        FILE* resultFile = fopen(resultFilename, "r");
-        if (!resultFile) {
-            perror("Error opening result file");
-            continue;
-        }
+//    double totalSum = 0;
+//    for (int i = 0; i < nChildren; i++) {
+//        waitpid(pids[i], NULL, 0);
+//
+//        char resultFilename[BUFFER_SIZE];
+//        sprintf(resultFilename, "result_%d.txt", i);
+//        FILE* resultFile = fopen(resultFilename, "r");
+//        if (!resultFile) {
+//            perror("Error opening result file");
+//            continue;
+//        }
+//
+//        double sum = 0;
+//        fscanf(resultFile, "%lf", &sum);
+//        totalSum += sum;
+//        fclose(resultFile);
+//        remove(resultFilename);
+//    }
+//
+//    printf("Total sum of squares: %f\n", totalSum);
 
-        double sum = 0;
-        fscanf(resultFile, "%lf", &sum);
-        totalSum += sum;
-        fclose(resultFile);
-        remove(resultFilename);
-    }
-
-    printf("Total sum of squares: %f\n", totalSum);
+    sleep(50);
 
     return EXIT_SUCCESS;
 }
