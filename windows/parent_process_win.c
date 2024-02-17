@@ -5,37 +5,68 @@
 
 #define BUFFER_SIZE 1024
 
+int checkFileContent(const char* filePath) {
+    FILE* file = fopen(filePath, "r");
+    if (!file) {
+        fprintf(stderr, "Error opening file: %s\n", filePath);
+        return -1;
+    }
+
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    if (fileSize == 0) {
+        fprintf(stderr, "Error: File %s is empty.\n", filePath);
+        fclose(file);
+        return -2;
+    }
+    rewind(file);
+
+    double number;
+    int validNumbers = 0;
+    while (fscanf(file, "%lf", &number) == 1) {
+        validNumbers++;
+    }
+
+    fclose(file);
+
+    if (validNumbers == 0) {
+        fprintf(stderr, "Error: No valid numbers found in file %s.\n", filePath);
+        return -3;
+    }
+
+    return 0;
+}
+
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <number_of_children>\n", argv[0]);
+    if (argc != 3) {
+        fprintf(stderr, "Usage: %s <number_of_children> <path_to_numbers_file>\n", argv[0]);
+        exit(EXIT_FAILURE);
+    }
+
+    int fileCheckResult = checkFileContent(argv[2]);
+    if (fileCheckResult != 0) {
         exit(EXIT_FAILURE);
     }
 
     int nChildren = atoi(argv[1]);
-    int totalNumbers = 10; // Assuming we know the total numbers in advance. Adjust as needed.
-
-    // Adjust the number of children if necessary
-    if (nChildren > totalNumbers / 2) {
-        nChildren = totalNumbers / 2;
-        printf("Number of children adjusted to %d\n", nChildren);
+    if (nChildren <= 0) {
+        fprintf(stderr, "Error: The number of children must be a positive integer.\n");
+        exit(EXIT_FAILURE);
     }
 
-    int numbersPerChild = totalNumbers / nChildren;
-    int extraNumbers = totalNumbers % nChildren;
+    int totalNumbers = 10;
 
     STARTUPINFO si[nChildren];
     PROCESS_INFORMATION pi[nChildren];
     char cmdLine[BUFFER_SIZE];
 
     for (int i = 0; i < nChildren; i++) {
-        int start = i * numbersPerChild;
-        int end = (i == nChildren - 1) ? totalNumbers : start + numbersPerChild + (i == nChildren - 1 ? extraNumbers : 0);
-
         ZeroMemory(&si[i], sizeof(si[i]));
         si[i].cb = sizeof(si[i]);
         ZeroMemory(&pi[i], sizeof(pi[i]));
 
-        sprintf(cmdLine, "child_process_win.exe %d %d %d", start, end, i);
+        sprintf(cmdLine, "child_process_win.exe %d %d %d \"%s\"", i, totalNumbers, i, argv[2]);
+
         if (!CreateProcess(NULL, cmdLine, NULL, NULL, FALSE, 0, NULL, NULL, &si[i], &pi[i])) {
             fprintf(stderr, "CreateProcess failed (%d).\n", GetLastError());
             exit(EXIT_FAILURE);
@@ -56,14 +87,15 @@ int main(int argc, char* argv[]) {
             continue;
         }
 
-        double sum = 0;
-        fscanf(resultFile, "%lf", &sum);
-        totalSum += sum;
+        double sum;
+        if (fscanf(resultFile, "%lf", &sum) == 1) {
+            totalSum += sum;
+        }
         fclose(resultFile);
         remove(resultFilename);
     }
 
     printf("Total sum of squares: %f\n", totalSum);
 
-    return EXIT_SUCCESS;
+    return 0;
 }

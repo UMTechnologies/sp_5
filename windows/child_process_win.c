@@ -3,20 +3,22 @@
 #include "windows.h"
 
 int main(int argc, char *argv[]) {
-    if (argc != 4) {
-        fprintf(stderr, "Usage: %s <start_pos> <end_pos> <child_index>\n", argv[0]);
+    if (argc != 5) {
+        fprintf(stderr, "Usage: %s <start_pos> <end_pos> <child_index> <path_to_numbers_file>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
     int start = atoi(argv[1]);
     int end = atoi(argv[2]);
     int childIndex = atoi(argv[3]);
+    char* numbersFilePath = argv[4];
+
     char resultFilename[260];
     sprintf(resultFilename, "result_%d.txt", childIndex);
 
-    FILE* file = fopen("numbers.txt", "r");
+    FILE* file = fopen(numbersFilePath, "r");
     if (!file) {
-        fprintf(stderr, "Error opening numbers.txt\n");
+        fprintf(stderr, "Error opening file: %s\n", numbersFilePath);
         exit(EXIT_FAILURE);
     }
 
