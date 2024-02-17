@@ -39,5 +39,7 @@ int main(int argc, char *argv[]) {
     fprintf(file, "%f", sum);
     fclose(file);
 
+    sleep(50);
+
     return EXIT_SUCCESS;
 }
