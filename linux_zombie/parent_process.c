@@ -44,8 +44,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    fclose(resultFile);
-
 //    double totalSum = 0;
 //    for (int i = 0; i < nChildren; i++) {
 //        waitpid(pids[i], NULL, 0);
