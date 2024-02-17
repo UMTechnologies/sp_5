@@ -54,8 +54,8 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < nChildren; i++) {
         pid_t pid = fork();
         if (pid == 0) {
-            char* args[] = {"./child_process_linux", argv[2], NULL};
-            execvp(args[0], args);
+            execl("./child_process_linux", "child_process_linux", argv[2], NULL);
+            fprintf(stderr, "Error executing child process\n");
             exit(EXIT_FAILURE);
         } else if (pid < 0) {
             fprintf(stderr, "fork failed\n");
